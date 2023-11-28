@@ -9,3 +9,6 @@ class Task(models.Model):
     is_finished = models.BooleanField(default=False)
     author = models.ForeignKey(UserAccount, null=True, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.title} - {self.description} - {self.is_finished} - {self.author} - {self.created_at}"
