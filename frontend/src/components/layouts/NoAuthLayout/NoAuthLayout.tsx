@@ -1,7 +1,12 @@
-import { Outlet } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 import Nav from "./Nav";
+import useUserStore from "../../../stores/userStore";
 
 const NoAuthLayout = () => {
+  const { userAccessToken } = useUserStore();
+
+  if (userAccessToken) return <Navigate to="/auth" />;
+
   return (
     <div>
       <Nav />

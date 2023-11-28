@@ -3,6 +3,7 @@ import { useField } from "formik";
 import { InputText } from "primereact/inputtext";
 
 import { Password } from "primereact/password";
+import { useState } from "react";
 
 interface Props {
   name: string;
@@ -48,10 +49,23 @@ const TextInput = (props: Props) => {
         </label>
       </span>
       {meta.touched && meta.error ? (
-        <small className="tw-text-red-500 ">{meta.error}</small>
+        typeof meta.error == "string" ? (
+          <small className="tw-text-red-500 ">{meta.error}</small>
+        ) : (
+          Object.values(meta.error).map((error, index) => (
+            <small key={index} className="tw-text-red-500 ">
+              {error as string}
+            </small>
+          ))
+        )
       ) : null}
     </div>
   );
 };
 
 export default TextInput;
+// meta.error
+//             .split(".")
+//             .map((error, index) => (
+//               <small className="tw-text-red-500 ">{error}</small>
+//             ))

@@ -1,11 +1,13 @@
 import axios from "axios";
 
 const axiosClient = axios.create({
-  baseURL: `${import.meta.env.VITE_API_BASE_URL}/api`,
+  baseURL: `${import.meta.env.VITE_API_BASE_URL}/`,
 });
 
 axiosClient.interceptors.request.use((config) => {
-  config.headers.Authorization = `Bearer ${localStorage.getItem("TOKEN")}`;
+  if (localStorage.getItem("access")) {
+    config.headers.Authorization = `JWT ${localStorage.getItem("access")}`;
+  }
   return config;
 });
 
