@@ -18,8 +18,21 @@ class TaskViewSet(viewsets.ModelViewSet):
         serializer = TaskSerializer(tasks, many=True)
         return Response(serializer.data)
 
-    def retrieve(self, request, pk):
-        return Response(pk)
+    def retrieve(self, request, *args, **kwargs):
+        try:
+            task = Task.objects.get(pk=kwargs["pk"])
+        except Task.DoesNotExist:
+            return Response(
+                {"details": "Task does not exist"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if not task.author == request.user:
+            return Response(
+                {"details": "You are not authorized"}, status=status.HTTP_403_FORBIDDEN
+            )
+        serializer = TaskSerializer(task)
+        return Response(serializer.data)
 
     def create(self, request, *args, **kwargs):
         data = {
@@ -35,9 +48,9 @@ class TaskViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     def update(self, request, *args, **kwargs):
-        task = Task.objects.get(pk=kwargs["pk"])
-        print(task)
-        if not task:
+        try:
+            task = Task.objects.get(pk=kwargs["pk"])
+        except Task.DoesNotExist:
             return Response(
                 {"details": "Task does not exist"},
                 status=status.HTTP_400_BAD_REQUEST,
@@ -58,9 +71,9 @@ class TaskViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     def destroy(self, request, *args, **kwargs):
-        task = Task.objects.get(pk=kwargs["pk"])
-        print(task)
-        if not task:
+        try:
+            task = Task.objects.get(pk=kwargs["pk"])
+        except Task.DoesNotExist:
             return Response(
                 {"details": "Task does not exist"},
                 status=status.HTTP_400_BAD_REQUEST,
