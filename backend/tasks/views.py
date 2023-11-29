@@ -14,7 +14,10 @@ class TaskViewSet(viewsets.ModelViewSet):
     queryset = Task.objects.all()
 
     def list(self, request, *args, **kwargs):
+        title = request.query_params.get("title")
         tasks = Task.objects.filter(author=request.user)
+        if title:
+            tasks = tasks.filter(title__icontains=title)
         serializer = TaskSerializer(tasks, many=True)
         return Response(serializer.data)
 
