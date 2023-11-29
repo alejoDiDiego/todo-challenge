@@ -9,4 +9,6 @@ from tasks import views
 router = DefaultRouter()
 router.register("", views.TaskViewSet)
 
-urlpatterns = [path("", include(router.urls))]
+urlpatterns = [
+    path("", include(router.urls)),
+]
