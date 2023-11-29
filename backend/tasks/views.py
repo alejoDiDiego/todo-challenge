@@ -5,6 +5,7 @@ from .models import Task
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework import status
 
 
 @permission_classes([IsAuthenticated])
@@ -17,61 +18,56 @@ class TaskViewSet(viewsets.ModelViewSet):
         serializer = TaskSerializer(tasks, many=True)
         return Response(serializer.data)
 
+    def retrieve(self, request, pk):
+        return Response(pk)
+
     def create(self, request, *args, **kwargs):
-        serializer = TaskSerializer(data=request.data)
+        data = {
+            "title": request.data.get("title"),
+            "description": request.data.get("description"),
+            "author": request.user.id,
+        }
+        serializer = TaskSerializer(data=data)
         if not serializer.is_valid():
-            return Response(serializer.errors)
-        task = serializer.save(author=request.user)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        task = serializer.save()
         print(task)
         return Response(serializer.data)
 
     def update(self, request, *args, **kwargs):
-        serializer = TaskSerializer(data=request.data)
         task = Task.objects.get(pk=kwargs["pk"])
         print(task)
-        if task.author != request.user:
-            return Response(status=403)
+        if not task:
+            return Response(
+                {"details": "Task does not exist"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if not task.author == request.user:
+            return Response(
+                {"details": "You are not authorized"}, status=status.HTTP_403_FORBIDDEN
+            )
+        data = {
+            "title": request.data.get("title"),
+            "description": request.data.get("description"),
+            "is_finished": request.data.get("is_finished"),
+        }
+        serializer = TaskSerializer(instance=task, data=data, partial=True)
         if not serializer.is_valid():
-            return Response(serializer.errors)
-        print(args)
-        print(kwargs)
-        serializer.update(task, serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.save()
         return Response(serializer.data)
 
-
-# @permission_classes([IsAuthenticated])
-# class TaskRetrieveUpdateDeleteView(
-#     generics.GenericAPIView,
-#     mixins.RetrieveModelMixin,
-#     mixins.UpdateModelMixin,
-#     mixins.DestroyModelMixin,
-# ):
-#     serializer_class = TaskSerializer
-
-#     def update(self, request, *args, **kwargs):
-#         serializer = TaskSerializer()
-#         if not serializer.is_valid():
-#             return Response(serializer.errors)
-#         print(args)
-#         print(kwargs)
-#         return Response(serializer.data)
-
-
-# @api_view(["GET"])
-# @permission_classes([IsAuthenticated])
-# def list_tasks(request):
-#     tasks = Task.objects.filter(author=request.user.id)
-#     serializer = TaskSerializer(instance=tasks, many=True)
-#     return Response(serializer.data)
-
-
-# @api_view(["POST"])
-# @permission_classes([IsAuthenticated])
-# def create_task(request):
-#     serializer = TaskSerializer(data=request.data)
-
-#     if not serializer.is_valid():
-#         return Response(serializer.errors)
-
-#     serializer.save()
-#     return Response(serializer.data)
+    def destroy(self, request, *args, **kwargs):
+        task = Task.objects.get(pk=kwargs["pk"])
+        print(task)
+        if not task:
+            return Response(
+                {"details": "Task does not exist"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if not task.author == request.user:
+            return Response(
+                {"details": "You are not authorized"}, status=status.HTTP_403_FORBIDDEN
+            )
+        task.delete()
+        return Response({"msg": "Task Deleted"})
