@@ -28,9 +28,14 @@ class TaskViewSet(viewsets.ModelViewSet):
 
         if date:
             # parsed_date = data.make_aware(date)
-            date = timezone.datetime.strptime(date, "%Y-%m-%d").date()
-            print("this is the date")
-            print(date)
+            try:
+                date = timezone.datetime.strptime(date, "%Y-%m-%d").date()
+            except:
+                return Response(
+                    {"error": "'date' is not in the correct format (YYYY-MM-DD)."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
             if not date:
                 return Response(
                     {"error": "'date' is not in the correct format (YYYY-MM-DD)."},
