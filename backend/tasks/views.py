@@ -1,5 +1,4 @@
-from django.shortcuts import render
-from rest_framework import generics, viewsets, mixins
+from rest_framework import viewsets
 from .serializers import TaskSerializer
 from .models import Task
 from rest_framework.decorators import api_view, permission_classes
@@ -7,10 +6,6 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from django.utils.dateparse import parse_date
-from django.utils.timezone import make_aware
-from django.utils import timezone
-from datetime import datetime
-from django.conf import settings
 
 
 @permission_classes([IsAuthenticated])
@@ -27,7 +22,6 @@ class TaskViewSet(viewsets.ModelViewSet):
             tasks = tasks.filter(title__icontains=title)
 
         if date:
-            # parsed_date = data.make_aware(date)
             try:
                 date = parse_date(date)
             except:
