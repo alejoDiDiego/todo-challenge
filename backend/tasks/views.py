@@ -29,7 +29,7 @@ class TaskViewSet(viewsets.ModelViewSet):
         if date:
             # parsed_date = data.make_aware(date)
             try:
-                date = timezone.datetime.strptime(date, "%Y-%m-%d").date()
+                date = parse_date(date)
             except:
                 return Response(
                     {"error": "'date' is not in the correct format (YYYY-MM-DD)."},
