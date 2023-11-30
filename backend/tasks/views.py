@@ -6,6 +6,11 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
+from django.utils.dateparse import parse_date
+from django.utils.timezone import make_aware
+from django.utils import timezone
+from datetime import datetime
+from django.conf import settings
 
 
 @permission_classes([IsAuthenticated])
@@ -15,9 +20,24 @@ class TaskViewSet(viewsets.ModelViewSet):
 
     def list(self, request, *args, **kwargs):
         title = request.query_params.get("title")
+        date = request.query_params.get("date")
+
         tasks = Task.objects.filter(author=request.user)
         if title:
             tasks = tasks.filter(title__icontains=title)
+
+        if date:
+            # parsed_date = data.make_aware(date)
+            date = timezone.datetime.strptime(date, "%Y-%m-%d").date()
+            print("this is the date")
+            print(date)
+            if not date:
+                return Response(
+                    {"error": "'date' is not in the correct format (YYYY-MM-DD)."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            tasks = tasks.filter(created_at__date=date)
+
         serializer = TaskSerializer(tasks, many=True)
         return Response(serializer.data)
 
