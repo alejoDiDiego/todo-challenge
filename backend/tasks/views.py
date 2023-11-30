@@ -81,11 +81,14 @@ class TaskViewSet(viewsets.ModelViewSet):
             return Response(
                 {"details": "You are not authorized"}, status=status.HTTP_403_FORBIDDEN
             )
+
+        # This iteration of the data is because the user can or not pass the fields that they want to update. For example, I pass only title and is the only one that is updated. Or it works if I want to set the task to finish
         data = {
-            "title": request.data.get("title"),
-            "description": request.data.get("description"),
-            "is_finished": request.data.get("is_finished"),
+            field: request.data.get(field)
+            for field in ["title", "description", "is_finished"]
+            if field in request.data
         }
+
         serializer = TaskSerializer(instance=task, data=data, partial=True)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
