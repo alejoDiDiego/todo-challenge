@@ -1,9 +1,9 @@
 # Invera ToDo-List Challenge (Python/Django Jr-SSr)
 
-## Tecnologias y librerias:
+## Tecnologías y librerías:
 
 - Django y Django Rest Framework para la REST API
-- djoser y rest_framework_simplejwt: djoser me da varias vistas/rutas creadas por defecto para registrar, loguear, resetear el password, etc y simplejwt me permite crear y administrar los tokens de dichos usuarios para su autenticacion
+- djoser y rest_framework_simplejwt: djoser provee varias vistas/rutas creadas por defecto para registrar, loguear, resetear el password, etc y simplejwt me permite crear y administrar los tokens de dichos usuarios para su autenticación
 
 ## Cómo usar la aplicación
 
@@ -17,13 +17,15 @@
 
 #### Registrarse:
 
+- Tipo de request: POST
+
 - Endpoint: http://127.0.0.1:8000/api/auth/users/
 
 - Body: {
-  "email": <Not null y un email valido>,
-  "name": <Not null>,
-  "password": <Contraseña Not null de más de 8 caracteres, mayusculas, minusculas y números y letras>,
-  "re_password": <Repetir contraseña Not null>
+  "email": {Not null y un email valido},
+  "name": {Not null},
+  "password": {Contraseña Not null de más de 8 caracteres, mayusculas, minusculas y números y letras},
+  "re_password": {Repetir contraseña Not null}
   }
 
 - Return: usuario
@@ -35,8 +37,8 @@
 - Endpoint: http://127.0.0.1:8000/api/auth/jwt/create/
 
 - Body: {
-  "email": <Not null>,
-  "password": <Not null>
+  "email": {Not null},
+  "password": {Not null}
   }
 
 - Return: usuario
@@ -48,7 +50,7 @@
 - Endpoint: http://127.0.0.1:8000/api/auth/jwt/verify/
 
 - Body: {
-  "token": <Token>
+  "token": {Not null}
   }
 
 - Return: objeto vacio, pero peticion 200 Ok
@@ -77,7 +79,7 @@ Key: Authorization, Value: "JWT {token}"
 
 ##### http://127.0.0.1:8000/api/tasks/?title={caracteres}
 
-- Return: todas las tareas que tengan un titulo igual o parecido al de la query del usuario logueado
+- Return: todas las tareas que tengan un título igual o parecido al de la query del usuario logueado
 
 ##### http://127.0.0.1:8000/api/tasks/?date={YYYY-MM-DD}&title={caracteres}
 
@@ -98,8 +100,8 @@ Key: Authorization, Value: "JWT {token}"
 - Tipo de request: POST
 
 - Body: {
-  "title": "<Not null>",
-  "description": "<Not null>"
+  "title": {Not null},
+  "description": {Not null}
   }
 
 - Endpoints: http://127.0.0.1:8000/api/tasks/
@@ -111,9 +113,9 @@ Key: Authorization, Value: "JWT {token}"
 - Tipo de request: PUT/PATCH
 
 - Body (no todos los campos son necesarios, solo los que se van a modificar): {
-  "title": "<Nulleable>",
-  "description": "<Nulleable>",
-  "is_finished": "<Nulleable>"
+  "title": {Nulleable},
+  "description": {Nulleable},
+  "is_finished": {Nulleable}
   }
 
 - Endpoints: http://127.0.0.1:8000/api/tasks/{id}/
