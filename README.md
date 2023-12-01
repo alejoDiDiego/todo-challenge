@@ -1,37 +1,141 @@
 # Invera ToDo-List Challenge (Python/Django Jr-SSr)
 
-El propósito de esta prueba es conocer tu capacidad para crear una pequeña aplicación funcional en un límite de tiempo. A continuación, encontrarás las funciones, los requisitos y los puntos clave que debés tener en cuenta durante el desarrollo.
+## Tecnologias y librerias:
 
-## Qué queremos que hagas:
+- Django y Django Rest Framework para la REST API
+- djoser y rest_framework_simplejwt: djoser me da varias vistas/rutas creadas por defecto para registrar, loguear, resetear el password, etc y simplejwt me permite crear y administrar los tokens de dichos usuarios para su autenticacion
 
-- El Challenge consiste en crear una aplicación web sencilla que permita a los usuarios crear y mantener una lista de tareas.
-- La entrega del resultado será en un nuevo fork de este repo y deberás hacer una pequeña demo del funcionamiento y desarrollo del proyecto ante un super comité de las más grandes mentes maestras de Invera, o a un par de devs, lo que sea más fácil de conseguir.
-- Podes contactarnos en caso que tengas alguna consulta.
+## Cómo usar la aplicación
 
-## Objetivos:
+- 1. Clonar la aplicación utilizando en la terminal el comando >git clone https://github.com/alejoDiDiego/todo-challenge
+- 2. En "todo-challenge/backend" ejecutar el entorno virtual con el comando >venv\Scripts\activate (en Windows) o >source env/bin/activate (en Linux o Mac)
+- 3. Ejecutar el siguiente comando >python manage.py runserver
 
-El usuario de la aplicación tiene que ser capaz de:
+## Enpoints
 
-- Autenticarse
-- Crear una tarea
-- Eliminar una tarea
-- Marcar tareas como completadas
-- Poder ver una lista de todas las tareas existentes
-- Filtrar/buscar tareas por fecha de creación y/o por el contenido de la misma
+### Guest (sin estar autenticado)
 
-## Qué evaluamos:
+#### Registrarse:
 
-- Desarrollo utilizando Python, Django. No es necesario crear un Front-End, pero sí es necesario tener una API que permita cumplir con los objetivos de arriba.
-- Uso de librerías y paquetes estandares que reduzcan la cantidad de código propio añadido.
-- Calidad y arquitectura de código. Facilidad de lectura y mantenimiento del código. Estándares seguidos.
-- [Bonus] Manejo de logs.
-- [Bonus] Creación de tests (unitarias y de integración)
-- [Bonus] Unificar la solución propuesta en una imagen de Docker por repositorio para poder ser ejecutada en cualquier ambiente (si aplica para full stack).
+- Endpoint: http://127.0.0.1:8000/api/auth/users/
 
-## Requerimientos de entrega:
+- Body: {
+  "email": <Not null y un email valido>,
+  "name": <Not null>,
+  "password": <Contraseña Not null de más de 8 caracteres, mayusculas, minusculas y números y letras>,
+  "re_password": <Repetir contraseña Not null>
+  }
 
-- Hacer un fork del proyecto y pushearlo en github. Puede ser privado.
-- La solución debe correr correctamente.
-- El Readme debe contener todas las instrucciones para poder levantar la aplicación, en caso de ser necesario, y explicar cómo se usa.
-- Disponibilidad para realizar una pequeña demo del proyecto al finalizar el challenge.
-- Tiempo para la entrega: Aproximadamente 7 días.
+- Return: usuario
+
+#### Login:
+
+- Tipo de request: POST
+
+- Endpoint: http://127.0.0.1:8000/api/auth/jwt/create/
+
+- Body: {
+  "email": <Not null>,
+  "password": <Not null>
+  }
+
+- Return: usuario
+
+#### Verificar Token (si es valido o no):
+
+- Tipo de request: POST
+
+- Endpoint: http://127.0.0.1:8000/api/auth/jwt/verify/
+
+- Body: {
+  "token": <Token>
+  }
+
+- Return: objeto vacio, pero peticion 200 Ok
+
+### Auth (necesita estar autenticado)
+
+Necesita Headers con el siguiente formato:
+
+Key: Authorization, Value: "JWT {token}"
+
+#### Todas las tareas del usuario:
+
+- Tipo de request: GET
+
+- Body: nada
+
+- Endpoints:
+
+##### http://127.0.0.1:8000/api/tasks/
+
+- Return: todas las tareas del usuario logueado
+
+##### http://127.0.0.1:8000/api/tasks/?date={YYYY-MM-DD}
+
+- Return: todas las tareas de la fecha seleccionada del usuario logueado
+
+##### http://127.0.0.1:8000/api/tasks/?title={caracteres}
+
+- Return: todas las tareas que tengan un titulo igual o parecido al de la query del usuario logueado
+
+##### http://127.0.0.1:8000/api/tasks/?date={YYYY-MM-DD}&title={caracteres}
+
+- Return: todas las tareas de la fecha seleccionada y que tengan un titulo igual o parecido del usuario logueado
+
+#### Una tarea del usuario:
+
+- Tipo de request: GET
+
+- Body: nada
+
+- Endpoints: http://127.0.0.1:8000/api/tasks/{id}/
+
+- Return: la tarea seleccionada del usuario logueado
+
+#### Crear tarea:
+
+- Tipo de request: POST
+
+- Body: {
+  "title": "<Not null>",
+  "description": "<Not null>"
+  }
+
+- Endpoints: http://127.0.0.1:8000/api/tasks/
+
+- Return: la tarea creada
+
+#### Editar (finalizar) tarea:
+
+- Tipo de request: PUT/PATCH
+
+- Body (no todos los campos son necesarios, solo los que se van a modificar): {
+  "title": "<Nulleable>",
+  "description": "<Nulleable>",
+  "is_finished": "<Nulleable>"
+  }
+
+- Endpoints: http://127.0.0.1:8000/api/tasks/{id}/
+
+- Return: la tarea editada
+
+#### Eliminar tarea:
+
+- Tipo de request: DELETE
+
+- Body: none
+
+- Endpoints: http://127.0.0.1:8000/api/tasks/{id}/
+
+- Return: mensaje que la tarea fue eliminada
+
+#### Informacion del usuario:
+
+- Tipo de request: GET
+
+- Body: none
+
+- Endpoints: http://127.0.0.1:8000/api/auth/users/me/
+
+- Return: informacion del usuario
