@@ -41,7 +41,7 @@
   "password": {Not null}
   }
 
-- Return: usuario
+- Return: refresh y access token (access token es el que usaremos)
 
 #### Verificar Token (si es valido o no):
 
@@ -50,7 +50,7 @@
 - Endpoint: http://127.0.0.1:8000/api/auth/jwt/verify/
 
 - Body: {
-  "token": {Not null}
+  "token": {Not null, access token}
   }
 
 - Return: objeto vacio, pero peticion 200 Ok
@@ -59,7 +59,7 @@
 
 Necesita Headers con el siguiente formato:
 
-Key: Authorization, Value: "JWT {token}"
+Key: Authorization, Value: "JWT {access token}"
 
 #### Todas las tareas del usuario:
 
